@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 const Query = require('./lib/query');
 
 const debug = debugPkg('mongolass-model');
+const { Schema } = require('./lib/schema.js');
 
 export class Model {
   _db: any;
@@ -62,6 +63,11 @@ export class Model {
    * get/set another model
    */
   model(name: string, schema: any, opts: object) {
+    if (!(schema instanceof Schema)) {
+      // eslint-disable-next-line no-param-reassign
+      schema = new Schema(name, schema);
+    }
+
     return this._db.model(name, schema, opts);
   }
 

@@ -1,9 +1,9 @@
 import test from 'ava';
-
 import { access } from 'fs';
 import { resolve as pathResolve } from 'path';
 import rimraf from 'rimraf';
-import { Nmdb, Schema } from '../dist/index';
+
+import { Nmdb, Schema } from '../dist';
 
 const nedbSaveDir = pathResolve(__dirname, '../.tmp');
 
@@ -13,13 +13,12 @@ function getModel() {
   nmdb.connect(`nedb://${nedbSaveDir}`);
   // nmdb.connect('nedb://memory');
 
-  const TestSchema = new Schema('TestSchema', {
-    name: { type: 'string', required: true },
-    age: { type: 'number' },
-  });
-
   index += 1;
-  const TestModel = nmdb.model(`test-${index}`, TestSchema);
+  const TestModel = nmdb.model(`test-${index}`, {
+    name: { type: 'string', required: true },
+    age: { type: Number },
+    address: { type: Schema.Types.Mixed },
+  });
   return TestModel;
 }
 
@@ -123,7 +122,7 @@ test('find && findOne', async (t) => {
   await Model.insertMany([
     { name: 'name', age: 1 },
     { name: 'name', age: 2 },
-    { name: 'name', age: 3 },
+    { name: 'name', age: 3, address: ['省', '市', '区'] },
     { name: 'name4', age: 4 },
   ]);
 
@@ -141,6 +140,8 @@ test('find && findOne', async (t) => {
 
   t.is(users.length, 3);
   t.is(users[0].age, 3);
+  t.is(users[0].address.length, 3);
+  t.is(users[0].address.join(''), ['省', '市', '区'].join(''));
   t.is(users[1].age, 2);
 
   users = await Model.find(
