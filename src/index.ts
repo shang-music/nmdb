@@ -17,7 +17,7 @@ const { Schema } = require('./lib/schema.js');
 
 const debug = debugPkg('Nmdb');
 
-interface IModel {
+interface IModel<T = any> {
   countDocuments(query: object): Promise<number>;
 
   createIndex(fieldOrSpec: string | object, options?: IIndexOptions): Promise<void>;
@@ -29,9 +29,9 @@ interface IModel {
   dropIndex(indexName: string): Promise<void>;
 
   // eslint-disable-next-line no-restricted-globals
-  find(query: object, options?: IFindOptions): Promise<any[]>;
+  find(query: object, options?: IFindOptions): Promise<T[]>;
 
-  findOne(query: object, options?: IFindOptions): Promise<any | null>;
+  findOne(query: object, options?: IFindOptions): Promise<T | null>;
 
   insertMany(docs: object[]): Promise<IInsertManyResult>;
 
@@ -129,7 +129,7 @@ export default class Nmdb {
   /**
    * get/set collection model
    */
-  model(name: string, schema?: any, opts?: object): IModel {
+  model<T>(name: string, schema?: any, opts?: object): IModel<T> {
     if (!name || !_.isString(name)) {
       throw new TypeError('Missing model name');
     }
