@@ -129,7 +129,7 @@ export default class Nmdb {
   /**
    * get/set collection model
    */
-  model<T>(name: string, schema?: any, opts?: object): IModel<T> {
+  model<T = any>(name: string, schema?: any, opts?: object): IModel<T> {
     if (!name || !_.isString(name)) {
       throw new TypeError('Missing model name');
     }
